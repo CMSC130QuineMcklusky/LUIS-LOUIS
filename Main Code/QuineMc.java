@@ -1,5 +1,3 @@
-package up.edu;
-
 import java.util.*;
 
 public class QuineMc{
@@ -61,27 +59,28 @@ public class QuineMc{
     }
 
     public static void main(String[] args){
-        int[] dec = {1,2,6,9,10,3};
+        int[] dec = {1, 2, 6, 9, 10, 3};
         int minterms = 5;
         String[] binaryStrings = new String[dec.length];
 
         for(int i = 0; i < dec.length; i++){
-            binaryStrings[i] = decToBinary(dec[i],minterms);
+            binaryStrings[i] = decToBinary(dec[i], minterms);
         }
 
+        // Print original Decimal and Binary table
+        System.out.printf("%-10s %-15s%n", "Decimal", "Binary");
         for (int i = 0; i < binaryStrings.length; i++) {
-            System.out.println("Decimal: " + dec[i] + ", Binary: " + binaryStrings[i]);
+            System.out.printf("%-10d %-15s%n", dec[i], binaryStrings[i]);
         }
 
         HashMap<Integer, List<String>> grouping = new HashMap<>();
-
         for(String binary : binaryStrings){
             int onesCount = countOnes(binary);
             grouping.putIfAbsent(onesCount, new ArrayList<>());
             grouping.get(onesCount).add(binary);
         }
 
-        System.out.println("Grouped by number of 1's:");
+        System.out.println("\nGrouped by number of 1's:");
         for (Map.Entry<Integer, List<String>> entry : grouping.entrySet()) {
             System.out.println("Group " + entry.getKey() + " 1's:");
             for (String binary : entry.getValue()) {
@@ -89,5 +88,34 @@ public class QuineMc{
             }
         }
 
+        // Map to hold merged terms and their corresponding decimal values
+        HashMap<String, List<Integer>> mergedTermsMap = new HashMap<>();
+
+        // Merging terms that differ by one bit
+        System.out.println("\nMerging terms that differ by one bit:");
+        for (int i = 0; i < binaryStrings.length; i++) {
+            for (int j = i + 1; j < binaryStrings.length; j++) {
+                // Use compareMinterms to check if they can be merged
+                if (compareMinterms(binaryStrings[i], binaryStrings[j])) {
+                    // Merge the two terms
+                    String merged = mergeMinterms(binaryStrings[i], binaryStrings[j]);
+
+                    // Add decimal values to merged terms map
+                    mergedTermsMap.putIfAbsent(merged, new ArrayList<>());
+                    mergedTermsMap.get(merged).add(dec[i]);
+                    mergedTermsMap.get(merged).add(dec[j]);
+
+                    System.out.println("Merged: " + binaryStrings[i] + " (" + dec[i] + ")" +
+                            " and " + binaryStrings[j] + " (" + dec[j] + ") -> " + merged);
+                }
+            }
+        }
+
+        // Print all merged terms with their corresponding decimal values
+        System.out.println("\nFinal Merged Terms with Decimals:");
+        for (Map.Entry<String, List<Integer>> entry : mergedTermsMap.entrySet()) {
+            System.out.println("Binary: " + entry.getKey() + ", Decimals: " + entry.getValue());
+        }
     }
 }
+
